@@ -1,0 +1,14 @@
+Package: psmediate
+Type: Package
+Title: Causal Mediation Analysis Across Principal Strata
+Version: 0.1.0
+Author: Chao Cheng <c.cheng@yale.edu>; Fan Li <fan.f.li@yale.edu>
+Maintainer: Chao Cheng <c.cheng@yale.edu>
+Description: Multiply robust estimators for assessing principal natural (in)direct effects across principal strata based on the methodology in Cheng and Li (2024+) <https://arxiv.org/abs/2304.10025>.
+License: GPL (>= 2)
+Depends: MASS, nleqslv, boot, caret, SuperLearner, ranger
+VignetteBuilder: knitr
+Suggests: knitr, rmarkdown
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1

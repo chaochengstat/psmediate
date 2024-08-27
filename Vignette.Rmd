@@ -1,0 +1,172 @@
+---
+title: "Multiply robust estimation of principal natural (in)direct effects across principal strata"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multiply robust estimation of principal natural (in)direct effects across principal strata}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+This vignette demonstrates the use of the R package `psmediate` to assess principal natural (in)direct effects using the multiply robust estimator and the nonparametric efficient estimator. We follow the methodology in [Cheng and Li (2024)](https://arxiv.org/abs/2304.10025). The `psmediate` package is available at [https://github.com/chaochengstat/psmediate](https://github.com/chaochengstat/psmediate) and can be installed as follows
+```{r, eval = FALSE}
+devtools::install_github("chaochengstat/psmediate")
+```
+
+## Definition: Principal Natural Indirect and Direct Effects
+
+Let $X$ denote a vector of baseline covariates, $Z\in{0,1}$ denote a treatment, $D\in{0,1}$ denote a post-treatment event variable, $M$ denote a mediator, and $Y$ denote the outcome of interest. We assume $M$ and $Y$ are measured after $D$. Under the potential outcomes framework, we define $D_{z}$, $M_{zd}$, and $Y_{zdm}$ as the potential values of $D$, $M$, and $Y$, respectively. Specifically, $D_z$ is the value of $D$ had $Z=z$, $M_{zd}$ is the value of $M$ had $Z=z$ and $D=d$, and $Y_{zdm}$ is the value of $Y$ had $Z=z$, $D=d$, and $M=m$. Additionally, we define $Y_{zM_{z'}} = Y_{zD_zM_{z'D_{z'}}}$ as the potential outcome if the treatment were set to $z$ and $M$ were set to its natural value under $Z=z'$. We can define four principal strata based on the joint potential values of $D$, denoted by $U=D_1D_0$:
+
+| Principal Stratum ($U$) | group name |
+|:-------------:|:-------------:|
+| $11$      | always takers |
+| $10$     | compliers     | 
+| $00$ | never takers      |
+| $01$ | defiers      |
+
+Not all four principal strata exist. We assume standard monotonicity to rule out the defiers stratum. Under the one-sided noncompliance problem, we can assume strong monotonicity to rule out both always takers and never takers strata.
+
+For a given principal strata $U=d_1d_0$, we aim to decompose the principal causal effect ($\text{PCE}_{d_1d_0}$) into a principal natural indirect effect ($\text{PNIE}_{d_1d_0}$) and a principal natural direct effect ($\text{PNDE}_{d_1d_0}$):
+$$
+ \underbrace{\mathbb{E}\left[Y_{1M_1}-Y_{0M_0}|U=d_1d_0\right]}_{\text{PCE}_{d_1d_0}} = \underbrace{\mathbb{E}\left[Y_{1M_1}-Y_{1M_0}|U=d_1d_0\right]}_{\text{PNIE}_{d_1d_0}} + \underbrace{\mathbb{E}\left[Y_{1M_0}-Y_{0M_0}|U=d_1d_0\right]}_{\text{PNDE}_{d_1d_0}},
+$$
+where $d_1d_0\in\{11,10,00\}$ under the standard monotonicity and $d_1d_0\in\{10,00\}$ under the strong monotonicity. Once we know $\text{PCE}_{d_1d_0}$, $\text{PNIE}_{d_1d_0}$, and $\text{PNDE}_{d_1d_0}$ for all $d_1d_0$, we can further calculate the intention-to-treat effect (ITT), the intention-to-treat natural indirect effect (ITT-NIE), and the intention-to-treat natural direct effect (ITT-NDE):
+$$
+\text{ITT} = \sum_{d_1d_0} e_{d_1d_0}\times\text{PCE}_{d_1d_0}, \quad \text{ITT-NIE} = \sum_{d_1d_0} e_{d_1d_0}\times\text{PNIE}_{d_1d_0}, \quad \text{ITT-NDE} = \sum_{d_1d_0} e_{d_1d_0}\times\text{PNDE}_{d_1d_0}. 
+$$
+
+## Estimation 
+
+### Singly robust estimators
+
+We propose four singly robust estimators, $\widehat{\tau}^{\text{a}}$, $\widehat{\tau}^{\text{b}}$, $\widehat{\tau}^{\text{c}}$, and $\widehat{\tau}^{\text{d}}$, for all  $\tau\in\{\text{PCE}_{d_1d_0},\text{PNIE}_{d_1d_0},\text{PNDE}_{d_1d_0},\text{ITT},\text{ITT-NIE},\text{ITT-NDE}\}$. We specify the following parametric models for the four nuisance functions $f(Z|X)$, $f(D|Z,X)$, $f(M|Z,D,X)$, and $\mathbb{E}[Y|Z,D,M,X]$:
+
+| Index | Nuisance function | parametric model |
+|:-------:|:-------------:|:-------------:|
+| 1 | $f(Z|X)$      | logistic regression |
+| 2 | $f(D|Z,X)$     | logistic regression     | 
+| 3 | $f(M|Z,D,X)$ | logistic regression      |
+| 4 | $\mathbb{E}[Y|Z,D,M,X]$ | linear (or logistic) regression for continuous (or binary) outcome       |
+
+In the initial `psmediate` package, we assume $M$ to be a binary variable; we will incorporate the scenario with a continuous mediator later. All singly robust estimators are sensitive to model misspecification, where $\widehat{\tau}^{\text{a}}$ is only consistent when models 1, 2, 3 are correctly specified,  $\widehat{\tau}^{\text{b}}$ is only consistent when models 1, 3, 4 are correctly specified, $\widehat{\tau}^{\text{c}}$ is only consistent when models 1, 2, 4 are correctly specified, and $\widehat{\tau}^{\text{d}}$ is only consistent when models 2, 3, 4 are correctly specified. 
+
+
+### Multiply robust estimator
+
+Leveraging the efficient influence function, we further propose a multiply robust estimator $\widehat{\tau}^{\text{mr}}$, which is consistent under four types of misspecifications and is fully efficient when all nuisance models are correctly specified. Specifically, under suitable regularity conditions, we show $\widehat{\tau}^{\text{mr}}$ is consistent and asymptotically normal under either one of the four scenarios regarding correct ($\checkmark$) specification of parametric working models:
+
+| Nuisance model | Scenario 1 |Scenario 2 |Scenario 3 |Scenario 4 |
+|:-------:|:-------------:|:-------------:|:-------------:|:-------------:|
+| $f(Z|X)$      | $\checkmark$ | $\checkmark$ | $\checkmark$ |   |
+| $f(D|Z,X)$     |  $\checkmark$ |  | $\checkmark$ | $\checkmark$  |
+| $f(M|Z,D,X)$ | $\checkmark$ | $\checkmark$ |  | $\checkmark$  |
+| $\mathbb{E}[Y|Z,D,M,X]$ |  | $\checkmark$ | $\checkmark$ | $\checkmark$  |
+
+### Nonparametric efficient estimator
+
+To minimize the risk of model misspecification, we can also consider using modern machine learning algorithms to estimate the nuisance functions. Leveraging the efficient influence function, we further propose a nonparametric efficient estimator $\widehat{\tau}^{\text{np}}$, which is same to $\widehat{\tau}^{\text{mr}}$ but instead uses machine learning algorithms to estimate the nuisance functions. We show that $\widehat{\tau}^{\text{np}}$ is consistent, asymptotically normal, and fully efficient if the machine learning estimates converge to the truth with a $n^{-1/4}$-rate. In the `psmediate` package, we use Super Learner, an ensemble learner with multiple user-specified machine learning algorithms, to estimate the nuisance functions. 
+
+
+## Basic Syntax
+
+The data-fitting function is `mediate_par` and `mediate_np`, where the first performs the singly robust estimators and the multiply robust estimator, and the second performs the nonparametric efficient estimator. We can call `mediate_par` by
+
+`mediate_par(data,estimator,Xname,Yname,Zname,Dname,Mname,monotonicity,B)`
+
+We require input the following arguments:
+
+* `data`: data set
+* `estimator`: For singly robust estimation, set it to `a`, `b`, `c`, `d` for $\widehat{\tau}^{\text{a}}$, $\widehat{\tau}^{\text{b}}$, $\widehat{\tau}^{\text{c}}$, and $\widehat{\tau}^{\text{d}}$, respectively. For multiply robust estimation, set it to `mr`.
+* `Xname`: names of the baseline covariates
+* `Yname`: name of the outcome
+* `Zname`: name of the treatment
+* `Dname`: name of the post-treatment event
+* `Mname`: name of the mediator
+* `monotonicity`: `strong` or `standard` monotonicity assumption (default `standard`)
+* `B`: number of iterations for the nonparametric bootstrap procedure
+
+The output of `mediate_par` includes the point estimate, standard error, and 95% confidence interval for all $\tau\in\{\text{PCE}_{d_1d_0},\text{PNIE}_{d_1d_0},\text{PNDE}_{d_1d_0},\text{ITT},\text{ITT-NIE},\text{ITT-NDE}\}$, where the standard error and confidence interval are estimated based on bootstrap.
+
+Similarly, we can call `mediate_np` to implement the nonparametric efficient estimator as follows
+
+`mediate_np(data,Xname,Yname,Zname,Dname,Mname,monotonicity,learners,V)`
+
+In addition to the arguments `data`, `Xname`, `Yname`, `Zname`, `Dname`, `Mname`, and `monotonicity`, which are also used in `mediate_par`, one should also specify 
+
+* `learners`: A list of individual learners (default GLM and random forest)
+* `V`: number of folds for the cross-fitting procedure (default 5)
+
+The output of `mediate_np` also includes the point estimate, standard error, and 95% confidence interval.
+
+## An Illustrative Example
+
+Please library the `psmediate` package if needed.
+```{r import, message=FALSE, warning=FALSE}
+library("psmediate")
+```
+
+#### Data illustration
+
+We first simulate a data with with $n=500$ observations.
+
+```{r}
+set.seed(12345)
+data=data_gen(n=500)
+head(round(data,5))
+```
+In the `data` dataset, we include four baseline covariates `X1`, `X2`, `X3`, `X4`, a treatment `Z`, a post-treatment event `D`, a binary mediator `M`, and a continuous outcome `Y`. The standard monotonicity assumption is satisfied in the data generation process.
+
+#### Implement the singly robust estimators
+
+Below we implement $\widehat \tau^{\text{a}}$, where $\widehat \tau^{\text{b}}$, $\widehat \tau^{\text{c}}$, and $\widehat \tau^{\text{d}}$ can be similarly obtained.
+```{r}
+mediate_par(data,
+            estimator="a",
+            Xname=c("X1","X2","X3","X4"),
+            Yname="Y",
+            Zname="Z",
+            Dname="D",
+            Mname="M",
+            monotonicity="standard",
+            B=200)
+```
+
+
+#### Implement the multiply robust estimator
+
+Below we implement $\widehat \tau^{\text{mr}}$:
+```{r}
+mediate_par(data,
+            estimator="mr",
+            Xname=c("X1","X2","X3","X4"),
+            Yname="Y",
+            Zname="Z",
+            Dname="D",
+            Mname="M",
+            monotonicity="standard",
+            B=200)
+```
+
+
+#### Implement the nonparametric efficient estimator
+
+Below we implement $\widehat \tau^{\text{np}}$:
+```{r}
+mediate_np(data,
+           Xname=c("X1","X2","X3","X4"),
+           Yname="Y",
+           Zname="Z",
+           Dname="D",
+           Mname="M",
+           monotonicity="standard",
+           learners=c("SL.glm", "SL.ranger"),V=2)
+```

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2024-08-26" />
+
+<title>Multiply robust estimation of principal natural (in)direct effects across principal strata</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Multiply robust estimation of principal
+natural (in)direct effects across principal strata</h1>
+<h4 class="date">2024-08-26</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette demonstrates the use of the R package
+<code>psmediate</code> to assess principal natural (in)direct effects
+using the multiply robust estimator and the nonparametric efficient
+estimator. We follow the methodology in <a href="https://arxiv.org/abs/2304.10025">Cheng and Li (2024)</a>. The
+<code>psmediate</code> package is available at <a href="https://github.com/chaochengstat/psmediate">https://github.com/chaochengstat/psmediate</a>
+and can be installed as follows</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;chaochengstat/psmediate&quot;</span>)</span></code></pre></div>
+</div>
+<div id="definition-principal-natural-indirect-and-direct-effects" class="section level2">
+<h2>Definition: Principal Natural Indirect and Direct Effects</h2>
+<p>Let <span class="math inline">\(X\)</span> denote a vector of
+baseline covariates, <span class="math inline">\(Z\in{0,1}\)</span>
+denote a treatment, <span class="math inline">\(D\in{0,1}\)</span>
+denote a post-treatment event variable, <span class="math inline">\(M\)</span> denote a mediator, and <span class="math inline">\(Y\)</span> denote the outcome of interest. We
+assume <span class="math inline">\(M\)</span> and <span class="math inline">\(Y\)</span> are measured after <span class="math inline">\(D\)</span>. Under the potential outcomes
+framework, we define <span class="math inline">\(D_{z}\)</span>, <span class="math inline">\(M_{zd}\)</span>, and <span class="math inline">\(Y_{zdm}\)</span> as the potential values of <span class="math inline">\(D\)</span>, <span class="math inline">\(M\)</span>, and <span class="math inline">\(Y\)</span>, respectively. Specifically, <span class="math inline">\(D_z\)</span> is the value of <span class="math inline">\(D\)</span> had <span class="math inline">\(Z=z\)</span>, <span class="math inline">\(M_{zd}\)</span> is the value of <span class="math inline">\(M\)</span> had <span class="math inline">\(Z=z\)</span> and <span class="math inline">\(D=d\)</span>, and <span class="math inline">\(Y_{zdm}\)</span> is the value of <span class="math inline">\(Y\)</span> had <span class="math inline">\(Z=z\)</span>, <span class="math inline">\(D=d\)</span>, and <span class="math inline">\(M=m\)</span>. Additionally, we define <span class="math inline">\(Y_{zM_{z&#39;}} =
+Y_{zD_zM_{z&#39;D_{z&#39;}}}\)</span> as the potential outcome if the
+treatment were set to <span class="math inline">\(z\)</span> and <span class="math inline">\(M\)</span> were set to its natural value under
+<span class="math inline">\(Z=z&#39;\)</span>. We can define four
+principal strata based on the joint potential values of <span class="math inline">\(D\)</span>, denoted by <span class="math inline">\(U=D_1D_0\)</span>:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Principal Stratum (<span class="math inline">\(U\)</span>)</th>
+<th align="center">group name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><span class="math inline">\(11\)</span></td>
+<td align="center">always takers</td>
+</tr>
+<tr class="even">
+<td align="center"><span class="math inline">\(10\)</span></td>
+<td align="center">compliers</td>
+</tr>
+<tr class="odd">
+<td align="center"><span class="math inline">\(00\)</span></td>
+<td align="center">never takers</td>
+</tr>
+<tr class="even">
+<td align="center"><span class="math inline">\(01\)</span></td>
+<td align="center">defiers</td>
+</tr>
+</tbody>
+</table>
+<p>Not all four principal strata exist. We assume standard monotonicity
+to rule out the defiers stratum. Under the one-sided noncompliance
+problem, we can assume strong monotonicity to rule out both always
+takers and never takers strata.</p>
+<p>For a given principal strata <span class="math inline">\(U=d_1d_0\)</span>, we aim to decompose the
+principal causal effect (<span class="math inline">\(\text{PCE}_{d_1d_0}\)</span>) into a principal
+natural indirect effect (<span class="math inline">\(\text{PNIE}_{d_1d_0}\)</span>) and a principal
+natural direct effect (<span class="math inline">\(\text{PNDE}_{d_1d_0}\)</span>): <span class="math display">\[
+\underbrace{\mathbb{E}\left[Y_{1M_1}-Y_{0M_0}|U=d_1d_0\right]}_{\text{PCE}_{d_1d_0}}
+=
+\underbrace{\mathbb{E}\left[Y_{1M_1}-Y_{1M_0}|U=d_1d_0\right]}_{\text{PNIE}_{d_1d_0}}
++
+\underbrace{\mathbb{E}\left[Y_{1M_0}-Y_{0M_0}|U=d_1d_0\right]}_{\text{PNDE}_{d_1d_0}},
+\]</span> where <span class="math inline">\(d_1d_0\in\{11,10,00\}\)</span> under the standard
+monotonicity and <span class="math inline">\(d_1d_0\in\{10,00\}\)</span>
+under the strong monotonicity. Once we know <span class="math inline">\(\text{PCE}_{d_1d_0}\)</span>, <span class="math inline">\(\text{PNIE}_{d_1d_0}\)</span>, and <span class="math inline">\(\text{PNDE}_{d_1d_0}\)</span> for all <span class="math inline">\(d_1d_0\)</span>, we can further calculate the
+intention-to-treat effect (ITT), the intention-to-treat natural indirect
+effect (ITT-NIE), and the intention-to-treat natural direct effect
+(ITT-NDE): <span class="math display">\[
+\text{ITT} = \sum_{d_1d_0} e_{d_1d_0}\times\text{PCE}_{d_1d_0}, \quad
+\text{ITT-NIE} = \sum_{d_1d_0} e_{d_1d_0}\times\text{PNIE}_{d_1d_0},
+\quad \text{ITT-NDE} = \sum_{d_1d_0}
+e_{d_1d_0}\times\text{PNDE}_{d_1d_0}.
+\]</span></p>
+</div>
+<div id="estimation" class="section level2">
+<h2>Estimation</h2>
+<div id="singly-robust-estimators" class="section level3">
+<h3>Singly robust estimators</h3>
+<p>We propose four singly robust estimators, <span class="math inline">\(\widehat{\tau}^{\text{a}}\)</span>, <span class="math inline">\(\widehat{\tau}^{\text{b}}\)</span>, <span class="math inline">\(\widehat{\tau}^{\text{c}}\)</span>, and <span class="math inline">\(\widehat{\tau}^{\text{d}}\)</span>, for all <span class="math inline">\(\tau\in\{\text{PCE}_{d_1d_0},\text{PNIE}_{d_1d_0},\text{PNDE}_{d_1d_0},\text{ITT},\text{ITT-NIE},\text{ITT-NDE}\}\)</span>.
+We specify the following parametric models for the four nuisance
+functions <span class="math inline">\(f(Z|X)\)</span>, <span class="math inline">\(f(D|Z,X)\)</span>, <span class="math inline">\(f(M|Z,D,X)\)</span>, and <span class="math inline">\(\mathbb{E}[Y|Z,D,M,X]\)</span>:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="38%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Index</th>
+<th align="center">Nuisance function</th>
+<th align="center">parametric model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center"><span class="math inline">\(f(Z|X)\)</span></td>
+<td align="center">logistic regression</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center"><span class="math inline">\(f(D|Z,X)\)</span></td>
+<td align="center">logistic regression</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center"><span class="math inline">\(f(M|Z,D,X)\)</span></td>
+<td align="center">logistic regression</td>
+</tr>
+<tr class="even">
+<td align="center">4</td>
+<td align="center"><span class="math inline">\(\mathbb{E}[Y|Z,D,M,X]\)</span></td>
+<td align="center">linear (or logistic) regression for continuous (or
+binary) outcome</td>
+</tr>
+</tbody>
+</table>
+<p>In the initial <code>psmediate</code> package, we assume <span class="math inline">\(M\)</span> to be a binary variable; we will
+incorporate the scenario with a continuous mediator later. All singly
+robust estimators are sensitive to model misspecification, where <span class="math inline">\(\widehat{\tau}^{\text{a}}\)</span> is only
+consistent when models 1, 2, 3 are correctly specified, <span class="math inline">\(\widehat{\tau}^{\text{b}}\)</span> is only
+consistent when models 1, 3, 4 are correctly specified, <span class="math inline">\(\widehat{\tau}^{\text{c}}\)</span> is only
+consistent when models 1, 2, 4 are correctly specified, and <span class="math inline">\(\widehat{\tau}^{\text{d}}\)</span> is only
+consistent when models 2, 3, 4 are correctly specified.</p>
+</div>
+<div id="multiply-robust-estimator" class="section level3">
+<h3>Multiply robust estimator</h3>
+<p>Leveraging the efficient influence function, we further propose a
+multiply robust estimator <span class="math inline">\(\widehat{\tau}^{\text{mr}}\)</span>, which is
+consistent under four types of misspecifications and is fully efficient
+when all nuisance models are correctly specified. Specifically, under
+suitable regularity conditions, we show <span class="math inline">\(\widehat{\tau}^{\text{mr}}\)</span> is consistent
+and asymptotically normal under either one of the four scenarios
+regarding correct (<span class="math inline">\(\checkmark\)</span>)
+specification of parametric working models:</p>
+<table style="width:100%;">
+<colgroup>
+<col width="13%" />
+<col width="21%" />
+<col width="21%" />
+<col width="21%" />
+<col width="21%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Nuisance model</th>
+<th align="center">Scenario 1</th>
+<th align="center">Scenario 2</th>
+<th align="center">Scenario 3</th>
+<th align="center">Scenario 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><span class="math inline">\(f(Z|X)\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td align="center"><span class="math inline">\(f(D|Z,X)\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+</tr>
+<tr class="odd">
+<td align="center"><span class="math inline">\(f(M|Z,D,X)\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+</tr>
+<tr class="even">
+<td align="center"><span class="math inline">\(\mathbb{E}[Y|Z,D,M,X]\)</span></td>
+<td align="center"></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+<td align="center"><span class="math inline">\(\checkmark\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="nonparametric-efficient-estimator" class="section level3">
+<h3>Nonparametric efficient estimator</h3>
+<p>To minimize the risk of model misspecification, we can also consider
+using modern machine learning algorithms to estimate the nuisance
+functions. Leveraging the efficient influence function, we further
+propose a nonparametric efficient estimator <span class="math inline">\(\widehat{\tau}^{\text{np}}\)</span>, which is same
+to <span class="math inline">\(\widehat{\tau}^{\text{mr}}\)</span> but
+instead uses machine learning algorithms to estimate the nuisance
+functions. We show that <span class="math inline">\(\widehat{\tau}^{\text{np}}\)</span> is consistent,
+asymptotically normal, and fully efficient if the machine learning
+estimates converge to the truth with a <span class="math inline">\(n^{-1/4}\)</span>-rate. In the
+<code>psmediate</code> package, we use Super Learner, an ensemble
+learner with multiple user-specified machine learning algorithms, to
+estimate the nuisance functions.</p>
+</div>
+</div>
+<div id="basic-syntax" class="section level2">
+<h2>Basic Syntax</h2>
+<p>The data-fitting function is <code>mediate_par</code> and
+<code>mediate_np</code>, where the first performs the singly robust
+estimators and the multiply robust estimator, and the second performs
+the nonparametric efficient estimator. We can call
+<code>mediate_par</code> by</p>
+<p><code>mediate_par(data,estimator,Xname,Yname,Zname,Dname,Mname,monotonicity,B)</code></p>
+<p>We require input the following arguments:</p>
+<ul>
+<li><code>data</code>: data set</li>
+<li><code>estimator</code>: For singly robust estimation, set it to
+<code>a</code>, <code>b</code>, <code>c</code>, <code>d</code> for <span class="math inline">\(\widehat{\tau}^{\text{a}}\)</span>, <span class="math inline">\(\widehat{\tau}^{\text{b}}\)</span>, <span class="math inline">\(\widehat{\tau}^{\text{c}}\)</span>, and <span class="math inline">\(\widehat{\tau}^{\text{d}}\)</span>, respectively.
+For multiply robust estimation, set it to <code>mr</code>.</li>
+<li><code>Xname</code>: names of the baseline covariates</li>
+<li><code>Yname</code>: name of the outcome</li>
+<li><code>Zname</code>: name of the treatment</li>
+<li><code>Dname</code>: name of the post-treatment event</li>
+<li><code>Mname</code>: name of the mediator</li>
+<li><code>monotonicity</code>: <code>strong</code> or
+<code>standard</code> monotonicity assumption (default
+<code>standard</code>)</li>
+<li><code>B</code>: number of iterations for the nonparametric bootstrap
+procedure</li>
+</ul>
+<p>The output of <code>mediate_par</code> includes the point estimate,
+standard error, and 95% confidence interval for all <span class="math inline">\(\tau\in\{\text{PCE}_{d_1d_0},\text{PNIE}_{d_1d_0},\text{PNDE}_{d_1d_0},\text{ITT},\text{ITT-NIE},\text{ITT-NDE}\}\)</span>,
+where the standard error and confidence interval are estimated based on
+bootstrap.</p>
+<p>Similarly, we can call <code>mediate_np</code> to implement the
+nonparametric efficient estimator as follows</p>
+<p><code>mediate_np(data,Xname,Yname,Zname,Dname,Mname,monotonicity,learners,V)</code></p>
+<p>In addition to the arguments <code>data</code>, <code>Xname</code>,
+<code>Yname</code>, <code>Zname</code>, <code>Dname</code>,
+<code>Mname</code>, and <code>monotonicity</code>, which are also used
+in <code>mediate_par</code>, one should also specify</p>
+<ul>
+<li><code>learners</code>: A list of individual learners (default GLM
+and random forest)</li>
+<li><code>V</code>: number of folds for the cross-fitting procedure
+(default 5)</li>
+</ul>
+<p>The output of <code>mediate_np</code> also includes the point
+estimate, standard error, and 95% confidence interval.</p>
+</div>
+<div id="an-illustrative-example" class="section level2">
+<h2>An Illustrative Example</h2>
+<p>Please library the <code>psmediate</code> package if needed.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;psmediate&quot;</span>)</span></code></pre></div>
+<div id="data-illustration" class="section level4">
+<h4>Data illustration</h4>
+<p>We first simulate a data with with <span class="math inline">\(n=500\)</span> observations.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>data<span class="ot">=</span><span class="fu">data_gen</span>(<span class="at">n=</span><span class="dv">500</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(data,<span class="dv">5</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;   Z D M        Y       X1       X2       X3       X4</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 1 1 0 1 16.06238 -0.17462  1.67751 -1.42032  0.58553</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 2 1 0 0 11.86668 -0.67062  0.07947 -2.46694  0.70947</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 3 1 1 1 13.28386  0.50743 -0.85643  0.48472 -0.10930</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 4 0 0 0  8.50631  1.24743 -0.77878 -0.93797 -0.45350</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 5 1 1 1 15.41818 -1.24828 -0.38094  3.33073  0.60589</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 6 0 0 0  6.95509 -1.93472 -1.89736 -0.16295 -1.81796</span></span></code></pre></div>
+<p>In the <code>data</code> dataset, we include four baseline covariates
+<code>X1</code>, <code>X2</code>, <code>X3</code>, <code>X4</code>, a
+treatment <code>Z</code>, a post-treatment event <code>D</code>, a
+binary mediator <code>M</code>, and a continuous outcome <code>Y</code>.
+The standard monotonicity assumption is satisfied in the data generation
+process.</p>
+</div>
+<div id="implement-the-singly-robust-estimators" class="section level4">
+<h4>Implement the singly robust estimators</h4>
+<p>Below we implement <span class="math inline">\(\widehat
+\tau^{\text{a}}\)</span>, where <span class="math inline">\(\widehat
+\tau^{\text{b}}\)</span>, <span class="math inline">\(\widehat
+\tau^{\text{c}}\)</span>, and <span class="math inline">\(\widehat
+\tau^{\text{d}}\)</span> can be similarly obtained.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">mediate_par</span>(data,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>            <span class="at">estimator=</span><span class="st">&quot;a&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>            <span class="at">Xname=</span><span class="fu">c</span>(<span class="st">&quot;X1&quot;</span>,<span class="st">&quot;X2&quot;</span>,<span class="st">&quot;X3&quot;</span>,<span class="st">&quot;X4&quot;</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>            <span class="at">Yname=</span><span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>            <span class="at">Zname=</span><span class="st">&quot;Z&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>            <span class="at">Dname=</span><span class="st">&quot;D&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>            <span class="at">Mname=</span><span class="st">&quot;M&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>            <span class="at">monotonicity=</span><span class="st">&quot;standard&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>            <span class="at">B=</span><span class="dv">200</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;                          Point        SE   CI_lower  CI_upper</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; compliers: PNIE      1.5716887 1.8237686 -1.6876724  4.990598</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; compliers: PNDE      0.8153168 1.8733406 -2.7822961  4.464478</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; compliers: PCE       2.3870055 0.7096206  1.3427050  3.972104</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; never-takers: PNIE  -0.9473416 1.6498550 -4.2798347  2.416744</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; never-takers: PNDE   4.0388962 1.8568245  1.0058930  7.834798</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; never-takers: PCE    3.0915545 0.9736954  1.1122801  4.709319</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; always-takers: PNIE  0.3791346 2.4931473 -6.5201149  3.855533</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; always-takers: PNDE  3.8195939 2.7352813  0.3401836 11.256819</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; always-takers: PCE   4.1987285 0.9000576  2.5700091  6.141375</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; ITT-NIE              0.3273924 1.2064703 -2.5748371  2.299341</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; ITT-NDE              2.9083307 1.3445827  0.6841327  5.939568</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; ITT                  3.2357231 0.4923666  2.2787302  4.147970</span></span></code></pre></div>
+</div>
+<div id="implement-the-multiply-robust-estimator" class="section level4">
+<h4>Implement the multiply robust estimator</h4>
+<p>Below we implement <span class="math inline">\(\widehat
+\tau^{\text{mr}}\)</span>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">mediate_par</span>(data,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>            <span class="at">estimator=</span><span class="st">&quot;mr&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>            <span class="at">Xname=</span><span class="fu">c</span>(<span class="st">&quot;X1&quot;</span>,<span class="st">&quot;X2&quot;</span>,<span class="st">&quot;X3&quot;</span>,<span class="st">&quot;X4&quot;</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>            <span class="at">Yname=</span><span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>            <span class="at">Zname=</span><span class="st">&quot;Z&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>            <span class="at">Dname=</span><span class="st">&quot;D&quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>            <span class="at">Mname=</span><span class="st">&quot;M&quot;</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>            <span class="at">monotonicity=</span><span class="st">&quot;standard&quot;</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>            <span class="at">B=</span><span class="dv">200</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;                         Point        SE  CI_lower  CI_upper</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; compliers: PNIE     1.4319931 0.2157780 0.9837236 1.8844884</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; compliers: PNDE     0.8205567 0.2269874 0.3850943 1.3142462</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; compliers: PCE      2.2525498 0.1871024 1.9005139 2.6188963</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; never-takers: PNIE  0.6068290 0.1596446 0.3292504 0.9146045</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; never-takers: PNDE  3.2386480 0.2167260 2.8211902 3.6838223</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; never-takers: PCE   3.8454771 0.2141267 3.4378292 4.2932870</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; always-takers: PNIE 1.1465900 0.2225495 0.7023467 1.5292411</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; always-takers: PNDE 2.6355692 0.2797952 2.1225002 3.1774441</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; always-takers: PCE  3.7821592 0.2500347 3.2843404 4.3005191</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; ITT-NIE             1.0600455 0.1418286 0.7522176 1.3361535</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; ITT-NDE             2.2420239 0.1799812 1.9207468 2.6141226</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; ITT                 3.3020694 0.1566654 2.9795227 3.6032101</span></span></code></pre></div>
+</div>
+<div id="implement-the-nonparametric-efficient-estimator" class="section level4">
+<h4>Implement the nonparametric efficient estimator</h4>
+<p>Below we implement <span class="math inline">\(\widehat
+\tau^{\text{np}}\)</span>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">mediate_np</span>(data,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>           <span class="at">Xname=</span><span class="fu">c</span>(<span class="st">&quot;X1&quot;</span>,<span class="st">&quot;X2&quot;</span>,<span class="st">&quot;X3&quot;</span>,<span class="st">&quot;X4&quot;</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>           <span class="at">Yname=</span><span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>           <span class="at">Zname=</span><span class="st">&quot;Z&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>           <span class="at">Dname=</span><span class="st">&quot;D&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>           <span class="at">Mname=</span><span class="st">&quot;M&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>           <span class="at">monotonicity=</span><span class="st">&quot;standard&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>           <span class="at">learners=</span><span class="fu">c</span>(<span class="st">&quot;SL.glm&quot;</span>, <span class="st">&quot;SL.ranger&quot;</span>),<span class="at">V=</span><span class="dv">2</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;                         point        SE  CI_lower CI_upper</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; compliers: PNIE     1.4944701 0.2929630 0.9202626 2.068677</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; compliers: PNDE     0.7910519 0.3120969 0.1793419 1.402762</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; compliers: PCE      2.2855219 0.2017982 1.8899976 2.681046</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; never-takers: PNIE  0.5609334 0.1690324 0.2296299 0.892237</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; never-takers: PNDE  3.2904226 0.1998585 2.8986999 3.682145</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; never-takers: PCE   3.8513560 0.2076416 3.4443785 4.258333</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; always-takers: PNIE 1.3796536 0.2978555 0.7958569 1.963450</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; always-takers: PNDE 2.4553844 0.4281954 1.6161215 3.294647</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; always-takers: PCE  3.8350381 0.2756097 3.2948431 4.375233</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; ITT-NIE             1.1326948 0.1822785 0.7754290 1.489961</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; ITT-NDE             2.2272546 0.2469746 1.7431843 2.711325</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; ITT                 3.3599494 0.1664414 3.0337242 3.686175</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
